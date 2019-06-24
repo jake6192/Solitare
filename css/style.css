@@ -6,8 +6,11 @@ html, body {
 
 .pos {
   position: absolute;
-  min-height: 270px;
-  width: 175px;
+  min-height: 264px;
+  width: 172px;
+  background-color: rgba(140,140,140,0.1);
+  border: 1px solid rgba(20,20,20,0.2);
+  border-radius: 15px;
 }
 
 .pos._0 { top: 30px; left: 50px; }
@@ -26,7 +29,7 @@ html, body {
 .pos img.card {
   width: 175px;
   position: absolute;
-  left: 0;
+  left: -1px;
 }
 
 .pos._0 img.card.visible { left: 225px; }

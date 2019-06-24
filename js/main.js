@@ -16,6 +16,16 @@ $(document).ready(function() {
 });
 
 
+let parseCardValue = function(cardValue) {
+  switch(cardValue) {
+    case 'A': return 1; break;
+    case 'J': return 11; break;
+    case 'Q': return 12; break;
+    case 'K': return 13; break;
+    default: return +cardValue; break;
+  }
+};
+
 let allowDrop = (event) => event.preventDefault();
 let drag = (event) => {
   event.dataTransfer.setData("moveData", JSON.stringify({ "sourcePos": $(event.target.offsetParent).attr('class').split(' _')[1], "targetID": event.target.id }));

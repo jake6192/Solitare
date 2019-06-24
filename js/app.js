@@ -22,7 +22,7 @@ class Game {
         } else $(`div.pos._${card.position}`).append(`<img class="card" src="images/cards/${card.visible ? ''+card.value+card.suit : 'gray_back'}.png" id="${''+card.value+card.suit}" draggable="true" ondragstart="drag(event)" />`);
       }
       for(let i = 5; i < 12; i++) {
-        let cards = $(`.pos._${i}`).children('img'), bumper = 0;
+        let cards = $(`.pos._${i}`).children('img'), bumper = -1;
         for(var j = 0; j < cards.length; j++) {
           $(cards[j]).css({ "top": bumper });
           bumper += 35;
@@ -74,18 +74,23 @@ class Card {
     }
     this.validatePlacement = function(targetPosition) {
       let targetPostionStack = _GAME.deck.filter(e=>e.position==targetPosition);
-      let topTargetCard = targetPostionStack.filter(e=>e.positionIndex==targetPostionStack.length-1)[0];
+      if([1,2,3,4].indexOf(+targetPosition) != -1) {
+        if(targetPostionStack.length == 0) return this.value == 'A';
+        else if(this.suit == targetPostionStack[0].suit) return parseCardValue(this.value) == parseCardValue(targetPostionStack[targetPostionStack.length-1].value)+1;
+      } else {
+        let topTargetCard = targetPostionStack.filter(e=>e.positionIndex==targetPostionStack.length-1)[0];
 
-      if(targetPostionStack.length == 0) return this.value == 'K';
-      switch(topTargetCard.value) {
-        case 'K': if(this.value != 'Q') return false; break;
-        case 'Q': if(this.value != 'J') return false; break;
-        case 'J': if(this.value != '10') return false; break;
-        case  2 : if(this.value != 'A') return false; break;
-        case 'A': return false; break;
-        default: if(+topTargetCard.value != +this.value+1) return false; break;
+        if(targetPostionStack.length == 0) return this.value == 'K';
+        switch(topTargetCard.value) {
+          case 'K': if(this.value != 'Q') return false; break;
+          case 'Q': if(this.value != 'J') return false; break;
+          case 'J': if(this.value != '10') return false; break;
+          case  2 : if(this.value != 'A') return false; break;
+          case 'A': return false; break;
+          default: if(+topTargetCard.value != +this.value+1) return false; break;
+        }
+        return ((['H', 'D'].indexOf(topTargetCard.suit) != -1 && ['S', 'C'].indexOf(this.suit) != -1) || (['S', 'C'].indexOf(topTargetCard.suit) != -1 && ['H', 'D'].indexOf(this.suit) != -1));
       }
-      return ((['H', 'D'].indexOf(topTargetCard.suit) != -1 && ['S', 'C'].indexOf(this.suit) != -1) || (['S', 'C'].indexOf(topTargetCard.suit) != -1 && ['H', 'D'].indexOf(this.suit) != -1));
     };
   }
 }
