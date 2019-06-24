@@ -4,7 +4,11 @@ html, body {
   width: 100%;
 }
 
-.pos { position: relative; }
+.pos {
+  position: absolute;
+  min-height: 270px;
+  width: 175px;
+}
 
 .pos._0 { top: 30px; left: 50px; }
 .pos._1 { top: 30px; right: 725px; }
