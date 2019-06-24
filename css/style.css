@@ -28,3 +28,5 @@ html, body {
   position: absolute;
   left: 0;
 }
+
+.pos._0 img.card.visible { left: 225px; }

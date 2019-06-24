@@ -12,15 +12,14 @@ class Game {
     this.draw = function() {
       $('.container').html('');
       for(let i = 0; i < 12; i++) $('.container').append(`<div class="pos _${i}" ondrop="drop(event);" ondragover="allowDrop(event);"></div>`);
-      $(`.pos._0`).append(`<img class="card" src="images/cards/gray_back.png" />`);
+      $(`.pos._0`).append(`<img class="card" src="images/cards/gray_back.png" onclick="_GAME.drawNextCard(); _GAME.draw();" />`);
       this.deck.sort((a, b) => a.position - b.position || a.positionIndex - b.positionIndex);
       for(let i = 0; i < this.deck.length; i++) {
         let card = this.deck[i];
         if(card.position == 0) {
           if(!card.visible) continue;
-          // TODO //
-        }
-        $(`div.pos._${card.position}`).append(`<img class="card" src="images/cards/${card.visible ? ''+card.value+card.suit : 'gray_back'}.png" id="${''+card.value+card.suit}" draggable="true" ondragstart="drag(event)" />`);
+          $(`.pos._0`).append(`<img class="card visible" src="images/cards/${card.value}${card.suit}.png"  id="${card.value}${card.suit}" draggable="true" ondragstart="drag(event)" />`);
+        } else $(`div.pos._${card.position}`).append(`<img class="card" src="images/cards/${card.visible ? ''+card.value+card.suit : 'gray_back'}.png" id="${''+card.value+card.suit}" draggable="true" ondragstart="drag(event)" />`);
       }
       for(let i = 5; i < 12; i++) {
         let cards = $(`.pos._${i}`).children('img'), bumper = 0;
@@ -46,6 +45,16 @@ class Game {
         return x;
       }
     };
+    this.drawNextCard = () => {
+      let cards = this.deck.filter(e=>e.position==0);
+      let visibleCards = cards.filter(e=>e.visible);
+      if(visibleCards.length == 0) cards[0].visible = true;
+      else {
+        let index = cards.indexOf(visibleCards[0]);
+        cards[index].visible = false;
+        if(index != cards.length-1) cards[index+1].visible = true;
+      }
+    };
   }
 }
 
@@ -67,7 +76,7 @@ class Card {
       let targetPostionStack = _GAME.deck.filter(e=>e.position==targetPosition);
       let topTargetCard = targetPostionStack.filter(e=>e.positionIndex==targetPostionStack.length-1)[0];
 
-      if(targetPostionStack.length == 0) return true;
+      if(targetPostionStack.length == 0) return this.value == 'K';
       switch(topTargetCard.value) {
         case 'K': if(this.value != 'Q') return false; break;
         case 'Q': if(this.value != 'J') return false; break;
