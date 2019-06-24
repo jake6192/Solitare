@@ -2,6 +2,8 @@ class Game {
   constructor(gameType) {
     this.gameType = gameType;
     this.deck = [];
+    this.mainStack = [];
+    this.visibleStack = [];
     for(let x = 0, suits = ['H','S','D','C']; x < 4; x++) {
       for(let y = 1; y < 14; y++) {
         let card = new Card(suits[x], y);
@@ -19,7 +21,7 @@ class Game {
         if(card.position == 0) {
           if(!card.visible) continue;
           $(`.pos._0`).append(`<img class="card visible" src="images/cards/${card.value}${card.suit}.png"  id="${card.value}${card.suit}" draggable="true" ondragstart="drag(event)" />`);
-        } else $(`div.pos._${card.position}`).append(`<img class="card" src="images/cards/${card.visible ? ''+card.value+card.suit : 'gray_back'}.png" id="${''+card.value+card.suit}" draggable="true" ondragstart="drag(event)" />`);
+        } else $(`div.pos._${card.position}`).append(`<img class="card" src="images/cards/${card.visible ? ''+card.value+card.suit : 'gray_back'}.png" id="${card.value+card.suit}" draggable="${card.visible}" ondragstart="drag(event)" />`);
       }
       for(let i = 5; i < 12; i++) {
         let cards = $(`.pos._${i}`).children('img'), bumper = -1;
@@ -31,12 +33,16 @@ class Game {
     };
     this.findCardInDeck = function(card) {
       let value, suit;
-      if(card.length == 3) {
-        value = card.substr(0, 2);
-        suit = card.substr(2, 1);
-      } else {
-        value = card.split('')[0];
-        suit = card.split('')[1];
+      try {
+        if(card.length == 3) {
+          value = card.substr(0, 2);
+          suit = card.substr(2, 1);
+        } else {
+          value = card.split('')[0];
+          suit = card.split('')[1];
+        }
+      } catch(e) {
+        console.log('Card Err:\n'+card);
       }
       for(let i = 0; i < this.deck.length; i++) {
         let x = this.deck[i];
@@ -46,14 +52,18 @@ class Game {
       }
     };
     this.drawNextCard = () => {
-      let cards = this.deck.filter(e=>e.position==0);
-      let visibleCards = cards.filter(e=>e.visible);
-      if(visibleCards.length == 0) cards[0].visible = true;
-      else {
-        let index = cards.indexOf(visibleCards[0]);
-        cards[index].visible = false;
-        if(index != cards.length-1) cards[index+1].visible = true;
+      if(this.mainStack.length == 0) {
+        this.mainStack = this.visibleStack;
+        this.visibleStack = [];
       }
+      if(this.visibleStack.length > 0) {
+        let HTMLElement = this.findCardInDeck(this.visibleStack.slice(-1)[0]).getHTMLElement();
+        $(HTMLElement).attr({ "draggable": false });
+      }
+      let nextCard = this.findCardInDeck(this.mainStack.shift());
+      nextCard.visible = true;
+      nextCard.positionIndex = this.visibleStack.length;
+      this.visibleStack.push(`${nextCard.value}${nextCard.suit}`);
     };
   }
 }
@@ -92,5 +102,6 @@ class Card {
         return ((['H', 'D'].indexOf(topTargetCard.suit) != -1 && ['S', 'C'].indexOf(this.suit) != -1) || (['S', 'C'].indexOf(topTargetCard.suit) != -1 && ['H', 'D'].indexOf(this.suit) != -1));
       }
     };
+    this.getHTMLElement = () => $(`img.card#${this.value}${this.suit}`);
   }
 }

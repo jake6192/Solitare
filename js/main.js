@@ -12,6 +12,7 @@ $(document).ready(function() {
       case 6: for(let j = 21; j <= 27; j++) { let card = _GAME.deck[j]; card.position = i+5; card.positionIndex = j-21; if(j == 27) { card.visible = true; } } break;
     }
   }
+  for(let i = 28; i < 52; i++) _GAME.mainStack.push(`${_GAME.deck[i].value}${_GAME.deck[i].suit}`);
   _GAME.draw();
 });
 
@@ -41,11 +42,21 @@ let drop = (event) => {
 
   let card = _GAME.findCardInDeck(data.targetID);
   if(card.validatePlacement(newPos)) {
+    if(card.position == 0 && card.positionIndex == _GAME.visibleStack.length-1) {
+      let index = _GAME.visibleStack.indexOf(`${card.value}${card.suit}`);
+      console.log(_GAME.visibleStack.slice(-1)[0]);
+      if(index != -1) _GAME.visibleStack.pop();
+      console.log(_GAME.visibleStack.slice(-1)[0]);
+      let HTMLElement = _GAME.findCardInDeck(_GAME.visibleStack.slice(-1)[0]).getHTMLElement();
+      $(HTMLElement).attr({ "draggable": true });
+    }
+
+    let oldPositionIndex = card.positionIndex;
     card.position = +newPos;
     card.positionIndex = _GAME.deck.filter(e=>e.position==+newPos).length-1;
-    $(targetParentNode).append(document.getElementById(data));
 
-    let cardStackToMove = _GAME.deck.filter(e=>e.position==+oldPos&&e.visible).filter(e=>e.positionIndex>=card.positionIndex).sort((a, b)=>a.positionIndex - b.positionIndex);
+    let cardStackToMove = _GAME.deck.filter(e=>e.position==+oldPos&&e.visible).filter(e=>e.positionIndex>=oldPositionIndex).sort((a, b)=>a.positionIndex - b.positionIndex);
+    console.log(cardStackToMove);
     for(let i = 0; i < cardStackToMove.length; i++) {
       cardStackToMove[i].position = +newPos;
       cardStackToMove[i].positionIndex = card.positionIndex+i+1;
