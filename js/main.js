@@ -43,12 +43,11 @@ let drop = (event) => {
   let card = _GAME.findCardInDeck(data.targetID);
   if(card.validatePlacement(newPos)) {
     if(card.position == 0 && card.positionIndex == _GAME.visibleStack.length-1) {
-      let index = _GAME.visibleStack.indexOf(`${card.value}${card.suit}`);
-      console.log(_GAME.visibleStack.slice(-1)[0]);
-      if(index != -1) _GAME.visibleStack.pop();
-      console.log(_GAME.visibleStack.slice(-1)[0]);
-      let HTMLElement = _GAME.findCardInDeck(_GAME.visibleStack.slice(-1)[0]).getHTMLElement();
-      $(HTMLElement).attr({ "draggable": true });
+      if(_GAME.visibleStack.indexOf(`${card.value}${card.suit}`) != -1) _GAME.visibleStack.pop();
+      if(_GAME.visibleStack.length > 0) {
+        let HTMLElement = _GAME.findCardInDeck(_GAME.visibleStack.slice(-1)[0]).getHTMLElement();
+        $(HTMLElement).attr({ "draggable": true });
+      }
     }
 
     let oldPositionIndex = card.positionIndex;
@@ -56,7 +55,6 @@ let drop = (event) => {
     card.positionIndex = _GAME.deck.filter(e=>e.position==+newPos).length-1;
 
     let cardStackToMove = _GAME.deck.filter(e=>e.position==+oldPos&&e.visible).filter(e=>e.positionIndex>=oldPositionIndex).sort((a, b)=>a.positionIndex - b.positionIndex);
-    console.log(cardStackToMove);
     for(let i = 0; i < cardStackToMove.length; i++) {
       cardStackToMove[i].position = +newPos;
       cardStackToMove[i].positionIndex = card.positionIndex+i+1;

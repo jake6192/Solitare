@@ -13,8 +13,8 @@ class Game {
     this.deck.sort(function() { return 0.5 - Math.random() });
     this.draw = function() {
       $('.container').html('');
-      for(let i = 0; i < 12; i++) $('.container').append(`<div class="pos _${i}" ondrop="drop(event);" ondragover="allowDrop(event);"></div>`);
-      $(`.pos._0`).append(`<img class="card" src="images/cards/gray_back.png" onclick="_GAME.drawNextCard(); _GAME.draw();" />`);
+      for(let i = 0; i < 12; i++) $('.container').append(`<div class="pos _${i}" ondrop="drop(event);" ondragover="allowDrop(event);"${i==0 ? 'onclick="_GAME.drawNextCard(); _GAME.draw();"' : ''}></div>`);
+      if(this.mainStack.length > 0) $(`.pos._0`).append(`<img class="card" id="deck" src="images/cards/gray_back.png" />`);
       this.deck.sort((a, b) => a.position - b.position || a.positionIndex - b.positionIndex);
       for(let i = 0; i < this.deck.length; i++) {
         let card = this.deck[i];
@@ -42,7 +42,8 @@ class Game {
           suit = card.split('')[1];
         }
       } catch(e) {
-        console.log('Card Err:\n'+card);
+        console.warn(e);
+        console.log(card);
       }
       for(let i = 0; i < this.deck.length; i++) {
         let x = this.deck[i];
@@ -55,6 +56,11 @@ class Game {
       if(this.mainStack.length == 0) {
         this.mainStack = this.visibleStack;
         this.visibleStack = [];
+        for(let i = 0; i < this.mainStack.length; i++) {
+          let card = this.findCardInDeck(this.mainStack[i]);
+          card.visible = false;
+          card.positionIndex = 0;
+        }
       }
       if(this.visibleStack.length > 0) {
         let HTMLElement = this.findCardInDeck(this.visibleStack.slice(-1)[0]).getHTMLElement();
