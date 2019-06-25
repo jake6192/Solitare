@@ -88,15 +88,15 @@ class Card {
       case 12: this.value = 'Q'; break;
       case 13: this.value = 'K'; break;
     }
-    this.validatePlacement = function(targetPosition) {
+    this.getHTMLElement = () => $(`img.card#${this.value}${this.suit}`);
+    this.validatePlacement = (targetPosition) => {
       let targetPostionStack = _GAME.deck.filter(e=>e.position==targetPosition);
       if([1,2,3,4].indexOf(+targetPosition) != -1) {
         if(targetPostionStack.length == 0) return this.value == 'A';
-        else if(this.suit == targetPostionStack[0].suit) return parseCardValue(this.value) == parseCardValue(targetPostionStack[targetPostionStack.length-1].value)+1;
-      } else {
+        else if(this.suit == targetPostionStack[0].suit) return parseCardValue(this.value) == parseCardValue(targetPostionStack.slice(-1)[0].value)+1;
+      } else if(targetPostionStack.length == 0) return this.value == 'K';
+      else {
         let topTargetCard = targetPostionStack.filter(e=>e.positionIndex==targetPostionStack.length-1)[0];
-
-        if(targetPostionStack.length == 0) return this.value == 'K';
         switch(topTargetCard.value) {
           case 'K': if(this.value != 'Q') return false; break;
           case 'Q': if(this.value != 'J') return false; break;
@@ -108,6 +108,5 @@ class Card {
         return ((['H', 'D'].indexOf(topTargetCard.suit) != -1 && ['S', 'C'].indexOf(this.suit) != -1) || (['S', 'C'].indexOf(topTargetCard.suit) != -1 && ['H', 'D'].indexOf(this.suit) != -1));
       }
     };
-    this.getHTMLElement = () => $(`img.card#${this.value}${this.suit}`);
   }
 }
