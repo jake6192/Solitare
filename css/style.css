@@ -13,18 +13,18 @@ html, body {
   border-radius: 15px;
 }
 
-.pos._0 { top: 30px; left: 50px; }
-.pos._1 { top: 30px; right: 725px; }
-.pos._2 { top: 30px; right: 500px; }
-.pos._3 { top: 30px; right: 275px; }
-.pos._4 { top: 30px; right: 50px; }
-.pos._5 { top: 350px; left: 50px; }
-.pos._6 { top: 350px; left: 275px; }
-.pos._7 { top: 350px; left: 500px; }
-.pos._8 { top: 350px; left: 725px; }
-.pos._9 { top: 350px; left: 950px; }
-.pos._10 { top: 350px; left: 1175px; }
-.pos._11 { top: 350px; left: 1400px; }
+.pos._0 { top: 30px; left: 175px; }
+.pos._1 { top: 30px; left: 850px; }
+.pos._2 { top: 30px; left: 1075px; }
+.pos._3 { top: 30px; left: 1300px; }
+.pos._4 { top: 30px; left: 1525px; }
+.pos._5 { top: 350px; left: 175px; }
+.pos._6 { top: 350px; left: 400px; }
+.pos._7 { top: 350px; left: 625px; }
+.pos._8 { top: 350px; left: 850px; }
+.pos._9 { top: 350px; left: 1075px; }
+.pos._10 { top: 350px; left: 1300px; }
+.pos._11 { top: 350px; left: 1525px; }
 
 .pos img.card {
   width: 175px;
