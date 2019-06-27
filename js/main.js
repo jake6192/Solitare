@@ -39,6 +39,7 @@ let drop = (event) => {
 
   let oldPos = $(sourceParentNode).attr('class').split(' _')[1];
   let newPos = $(targetParentNode).attr('class').split(' _')[1];
+  if(oldPos == newPos) return;
 
   let card = _GAME.findCardInDeck(data.targetID);
   if(card.validatePlacement(newPos)) {

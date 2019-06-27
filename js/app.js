@@ -13,15 +13,15 @@ class Game {
     this.deck.sort(function() { return 0.5 - Math.random() });
     this.draw = function() {
       $('.container').html('');
-      for(let i = 0; i < 12; i++) $('.container').append(`<div class="pos _${i}" ondrop="drop(event);" ondragover="allowDrop(event);"${i==0 ? 'onclick="_GAME.drawNextCard(); _GAME.draw();"' : ''}></div>`);
+      for(let i = 0; i < 12; i++) $('.container').append(`<div class="pos _${i}" ondrop="drop(event);" ondragover="allowDrop(event);"${i==0 ? 'onclick="_GAME.drawNextCard(event); _GAME.draw();"' : ''}></div>`);
       if(this.mainStack.length > 0) $(`.pos._0`).append(`<img class="card" id="deck" src="images/cards/gray_back.png" />`);
       this.deck.sort((a, b) => a.position - b.position || a.positionIndex - b.positionIndex);
       for(let i = 0; i < this.deck.length; i++) {
         let card = this.deck[i];
         if(card.position == 0) {
           if(!card.visible) continue;
-          $(`.pos._0`).append(`<img class="card visible" src="images/cards/${card.value}${card.suit}.png"  id="${card.value}${card.suit}" draggable="true" ondragstart="drag(event)" />`);
-        } else $(`div.pos._${card.position}`).append(`<img class="card" src="images/cards/${card.visible ? ''+card.value+card.suit : 'gray_back'}.png" id="${card.value+card.suit}" draggable="${card.visible}" ondragstart="drag(event)" />`);
+          $(`.pos._0`).append(`<img class="card visible" src="images/cards/${card.value}${card.suit}.png"  id="${card.value}${card.suit}" draggable="true" ondragstart="drag(event)" onclick="_GAME.findCardInDeck($(this).attr('id')).onClick();" />`);
+        } else $(`div.pos._${card.position}`).append(`<img class="card" src="images/cards/${card.visible ? ''+card.value+card.suit : 'gray_back'}.png" id="${card.value+card.suit}" draggable="${card.visible}" ondragstart="drag(event)" onclick="_GAME.findCardInDeck($(this).attr('id')).onClick();" />`);
       }
       for(let i = 5; i < 12; i++) {
         let cards = $(`.pos._${i}`).children('img'), bumper = -1;
@@ -52,7 +52,8 @@ class Game {
         return x;
       }
     };
-    this.drawNextCard = () => {
+    this.drawNextCard = (event) => {
+      if($(event.target).hasClass('visible')) return;
       if(this.mainStack.length == 0) {
         this.mainStack = this.visibleStack;
         this.visibleStack = [];
@@ -88,6 +89,44 @@ class Card {
       case 12: this.value = 'Q'; break;
       case 13: this.value = 'K'; break;
     }
+    this.onClick = () => {
+      let cardFound = false, oldPosition = this.position, oldPositionIndex = this.positionIndex, newPosition;
+      let targetCards = _GAME.deck.filter(e=> e.positionIndex == _GAME.deck.filter(f=> f.position == e.position).length-1 && (
+        e.position==0 ? false : (
+          e.position<5 ? (e.suit == this.suit && parseCardValue(e.value) == parseCardValue(this.value)-1) : ((parseCardValue(e.value) == parseCardValue(this.value)+1) && (
+            ['H', 'D'].indexOf(this.suit) != -1 ? (e.suit == 'S' || e.suit == 'C') : (e.suit == 'D' || e.suit == 'H')
+          ))
+        )
+      ));
+      if(targetCards.length > 0) {
+        newPosition = targetCards[0].position;
+        cardFound = true;
+      } else if(['A', 'K'].indexOf(this.value) != -1) {
+        for(let i = (this.value=='K' ? 5 : (this.value=='A' ? 1 : 0)); i < (this.value=='K' ? 12 : (this.value=='A' ? 5 : 0)); i++) {
+          if(_GAME.deck.filter(e=>e.position==i).length != 0) continue;
+          newPosition = i;
+          cardFound = true;
+          break;
+        }
+      }
+      if(cardFound) {
+        let oldPositionStack = _GAME.deck.filter(e=>e.position==oldPosition);
+        let stackToMove = oldPositionStack.filter(e=>e.positionIndex>=oldPositionIndex);
+
+        let newPositionStack = _GAME.deck.filter(e=>e.position==newPosition);
+        let newPositionIndex = newPositionStack.length;
+
+        for(let i = 0; i < stackToMove.length; i++) {
+          stackToMove[i].position = newPosition;
+          stackToMove[i].positionIndex = newPositionIndex+i;
+        }
+
+        let oldStackTopCard = _GAME.deck.filter(e=>e.position==oldPosition).reverse()[0];
+        if(oldStackTopCard) if(!oldStackTopCard.visible) oldStackTopCard.visible = true;
+
+        _GAME.draw();
+      }
+    };
     this.getHTMLElement = () => $(`img.card#${this.value}${this.suit}`);
     this.validatePlacement = (targetPosition) => {
       let targetPostionStack = _GAME.deck.filter(e=>e.position==targetPosition);
