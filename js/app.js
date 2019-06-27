@@ -34,13 +34,8 @@ class Game {
     this.findCardInDeck = function(card) {
       let value, suit;
       try {
-        if(card.length == 3) {
-          value = card.substr(0, 2);
-          suit = card.substr(2, 1);
-        } else {
-          value = card.split('')[0];
-          suit = card.split('')[1];
-        }
+        value = card.length == 3 ? card.substr(0, 2) : card.split('')[0];
+        suit = card.length == 3 ? card.substr(2, 1) : card.split('')[1];
       } catch(e) {
         console.warn(e);
         console.log(card);
@@ -111,19 +106,20 @@ class Card {
       }
       if(cardFound) {
         let oldPositionStack = _GAME.deck.filter(e=>e.position==oldPosition);
-        let stackToMove = oldPositionStack.filter(e=>e.positionIndex>=oldPositionIndex);
-
         let newPositionStack = _GAME.deck.filter(e=>e.position==newPosition);
         let newPositionIndex = newPositionStack.length;
-
+        let stackToMove = oldPositionStack.filter(e=>e.positionIndex>=oldPositionIndex);
         for(let i = 0; i < stackToMove.length; i++) {
           stackToMove[i].position = newPosition;
           stackToMove[i].positionIndex = newPositionIndex+i;
+          if(oldPosition == 0) {
+            if(_GAME.visibleStack.indexOf(`${this.value}${this.suit}`) == _GAME.visibleStack.length-1) _GAME.visibleStack.pop();
+            break;
+          }
         }
-
         let oldStackTopCard = _GAME.deck.filter(e=>e.position==oldPosition).reverse()[0];
         if(oldStackTopCard) if(!oldStackTopCard.visible) oldStackTopCard.visible = true;
-
+        if(oldPosition == 0 && _GAME.visibleStack.indexOf(`${this.value}${this.suit}`) == _GAME.visibleStack.length-1) _GAME.visibleStack.pop();
         _GAME.draw();
       }
     };

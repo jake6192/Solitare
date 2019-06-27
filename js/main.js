@@ -44,7 +44,7 @@ let drop = (event) => {
   let card = _GAME.findCardInDeck(data.targetID);
   if(card.validatePlacement(newPos)) {
     if(card.position == 0 && card.positionIndex == _GAME.visibleStack.length-1) {
-      if(_GAME.visibleStack.indexOf(`${card.value}${card.suit}`) != -1) _GAME.visibleStack.pop();
+      if(_GAME.visibleStack.indexOf(`${card.value}${card.suit}`) == _GAME.visibleStack.length-1) _GAME.visibleStack.pop();
       if(_GAME.visibleStack.length > 0) {
         let HTMLElement = _GAME.findCardInDeck(_GAME.visibleStack.slice(-1)[0]).getHTMLElement();
         $(HTMLElement).attr({ "draggable": true });
