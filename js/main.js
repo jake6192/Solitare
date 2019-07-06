@@ -68,3 +68,18 @@ let drop = (event) => {
     _GAME.draw();
   }
 };
+
+let stackIsValid = (stack) => {
+  let lastCard = stack[0], currentCard;
+  for(let i = 1; i < stack.length; i++) {
+    currentCard = stack[i];
+    if(['H', 'D'].indexOf(lastCard.suit) != -1) {
+      if(['C', 'S'].indexOf(currentCard.suit) != -1) lastCard = currentCard;
+      else return false;
+    } else if(['C', 'S'].indexOf(lastCard.suit) != -1) {
+      if(['H', 'D'].indexOf(currentCard.suit) != -1) lastCard = currentCard;
+      else return false;
+    }
+  }
+  return true;
+}

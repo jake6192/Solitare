@@ -109,18 +109,20 @@ class Card {
         let newPositionStack = _GAME.deck.filter(e=>e.position==newPosition);
         let newPositionIndex = newPositionStack.length;
         let stackToMove = oldPositionStack.filter(e=>e.positionIndex>=oldPositionIndex);
-        for(let i = 0; i < stackToMove.length; i++) {
-          stackToMove[i].position = newPosition;
-          stackToMove[i].positionIndex = newPositionIndex+i;
-          if(oldPosition == 0) {
-            if(_GAME.visibleStack.indexOf(`${this.value}${this.suit}`) == _GAME.visibleStack.length-1) _GAME.visibleStack.pop();
-            break;
+        if(stackIsValid(stackToMove)) {
+          for(let i = 0; i < stackToMove.length; i++) {
+            stackToMove[i].position = newPosition;
+            stackToMove[i].positionIndex = newPositionIndex+i;
+            if(oldPosition == 0) {
+              if(_GAME.visibleStack.indexOf(`${this.value}${this.suit}`) == _GAME.visibleStack.length-1) _GAME.visibleStack.pop();
+              break;
+            }
           }
+          let oldStackTopCard = _GAME.deck.filter(e=>e.position==oldPosition).reverse()[0];
+          if(oldStackTopCard) if(!oldStackTopCard.visible) oldStackTopCard.visible = true;
+          if(oldPosition == 0 && _GAME.visibleStack.indexOf(`${this.value}${this.suit}`) == _GAME.visibleStack.length-1) _GAME.visibleStack.pop();
+          _GAME.draw();
         }
-        let oldStackTopCard = _GAME.deck.filter(e=>e.position==oldPosition).reverse()[0];
-        if(oldStackTopCard) if(!oldStackTopCard.visible) oldStackTopCard.visible = true;
-        if(oldPosition == 0 && _GAME.visibleStack.indexOf(`${this.value}${this.suit}`) == _GAME.visibleStack.length-1) _GAME.visibleStack.pop();
-        _GAME.draw();
       }
     };
     this.getHTMLElement = () => $(`img.card#${this.value}${this.suit}`);
